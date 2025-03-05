@@ -93,7 +93,8 @@ def create_app():
 def main():
     """Main function to run the server."""
     app = create_app()
-    app.run(port=PORT)
+    ssl_context = ('/etc/letsencrypt/live/server.elipson.dev/fullchain.pem', '/etc/letsencrypt/live/server.elipson.dev/privkey.pem')
+    app.run(host='0.0.0.0', port=PORT, ssl_context=ssl_context)
 
 if __name__ == "__main__":
     main()

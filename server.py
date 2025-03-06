@@ -1,7 +1,7 @@
 """
 Server module for managing user interactions and database operations.
 """
-
+ 
 import os
 import subprocess
 import logging

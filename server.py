@@ -3,8 +3,10 @@ Server module for managing user interactions and database operations.
 """
 
 import os
+import subprocess
 import logging
 from flask import Flask, request, jsonify
+import sqlite3
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -22,13 +24,20 @@ class User:
     @staticmethod
     def login(username, password):
         """Login method."""
-        return username == "test" and password == "test"
+        conn = sqlite3.connect('users.db')
+        cursor = conn.cursor()
 
+        cursor.execute("SELECT password FROM users WHERE username = ?", (username,))
+        result = cursor.fetchone()
+
+        conn.close()
+
+        if result and result[0] == password:
+            return True
+        return False
     @staticmethod
     def register(username, password, email):
-        """Register method."""
-        return username == "test" and password == "test" and email == "test"
-
+        subprocess.run(f"sqlite3 users.db \"INSERT INTO users (email, username, password) VALUES ('{email}', '{username}', '{password}');\", shell=True)")
 class Database:
     """Database interaction class."""
 

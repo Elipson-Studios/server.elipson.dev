@@ -8,11 +8,8 @@ Our strict security policy is in place to ensure the saftey and privacy of all o
 >Stability: Acceptable
 >
 >SSL: True
-### Server status:
-<blockquote style="border-left: 5px solid red; padding-left: 10px;">
-<h3>Offline</h3>
-</blockquote>
-
+## Server status:
+### Online
 >[!TIP]
 >To report a vunerability, start the subject with the severity level from this list:
 >P0: System-wide security issue or failure, people are affected

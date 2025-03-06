@@ -45,9 +45,11 @@ class Database:
     def get(database, line, col):
         """Get data from the database."""
         if database == "users":
-            print(line, col)
-            return True  # Placeholder for actual data retrieval
-        return None
+            message = {
+                "Error": "401 Unauthorized",
+                "Message": "You are not authorized to access this resource."
+            }
+        return message
 
     @staticmethod
     def inject(database, line, col, value):

@@ -18,6 +18,17 @@ RUNNING = False
 SERVERS = 1
 CLIENTS = 0
 
+class mail:
+    def support(subject, message, email):
+        """Send support email."""
+        full_message = f"Subject: {subject}\n\n{message}\n\nReply to: {email}"
+        subprocess.run(
+            ['mail', '-s', subject, 'support@elipson.dev'],
+            input=full_message.encode(),
+            check=True
+        )
+
+
 class User:
     """User management class."""
 
@@ -91,6 +102,8 @@ def create_app():
             Database.get(arg1, arg2, arg3)
         elif service == 'inject':
             Database.inject(arg1, arg2, arg3)
+        elif service == 'mail':
+            mail.support(arg1, arg2, arg3)
         else:
             return "Invalid service", 400
 

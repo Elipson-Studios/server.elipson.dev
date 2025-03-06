@@ -10,8 +10,8 @@ from flask import Flask, request, jsonify
 logging.basicConfig(level=logging.INFO)
 
 # Configuration
-PORT = int(os.getenv('PORT', '8080'))
-STATUS = 'offline'
+PORT = int(os.getenv('PORT', '443'))
+STATUS = 'online'
 RUNNING = False
 SERVERS = 1
 CLIENTS = 0
@@ -87,6 +87,16 @@ def create_app():
         else:
             return None
         return "Missing required parameters: service, arg1, arg2, arg3", 400
+
+    @app.errorhandler(503)
+    def service_unavailable(error):
+        """Handle 503 Service Unavailable errors."""
+        response = jsonify({
+            "error": "Service Unavailable",
+            "message": "The server is currently unable to handle the request due to temporary overloading or maintenance of the server."
+        })
+        response.status_code = 503
+        return response
 
     return app
 

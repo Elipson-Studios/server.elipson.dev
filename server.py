@@ -35,9 +35,11 @@ class User:
         if result and result[0] == password:
             return True
         return False
+
     @staticmethod
     def register(username, password, email):
-        subprocess.run(f"sqlite3 users.db \"INSERT INTO users (email, username, password) VALUES ('{email}', '{username}', '{password}');\", shell=True)")
+        subprocess.run(f"sqlite3 users.db \"INSERT INTO users (email, username, password) VALUES ('{email}', '{username}', '{password}');\"", shell=True)
+
 class Database:
     """Database interaction class."""
 
@@ -75,20 +77,14 @@ def create_app():
             }
             return jsonify(index)
 
-        required_params = ['service', 'arg1', 'arg2', 'arg3']
-        if all(param in params for param in required_params):
-            service = params.get('service')
-            arg1 = params.get('arg1')
-            arg2 = params.get('arg2')
-            arg3 = params.get('arg3')
-            return jsonify({
-                "Service": service,
-                "Arg1": arg1,
-                "Arg2": arg2,
-                "Arg3": arg3
-            })
+        service = params.get('service')
+        arg1 = params.get('arg1')
+        arg2 = params.get('arg2')
+        arg3 = params.get('arg3')
+
         if service == 'login':
-            User.login(arg1, arg2)
+            if not User.login(arg1, arg2):
+                return "Login failed", 503
         elif service == 'register':
             User.register(arg1, arg2, arg3)
         elif service == 'get':
@@ -96,7 +92,8 @@ def create_app():
         elif service == 'inject':
             Database.inject(arg1, arg2, arg3)
         else:
-            return None
+            return "Invalid service", 400
+
         return "Missing required parameters: service, arg1, arg2, arg3", 400
 
     @app.errorhandler(503)

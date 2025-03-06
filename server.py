@@ -24,7 +24,7 @@ class User:
     @staticmethod
     def login(username, password):
         """Login method."""
-        conn = sqlite3.connect('users.db')
+        conn = sqlite3.connect('/var/www/server.elipson.dev/users.db')
         cursor = conn.cursor()
 
         cursor.execute("SELECT password FROM users WHERE username = ?", (username,))
@@ -38,7 +38,7 @@ class User:
 
     @staticmethod
     def register(username, password, email):
-        subprocess.run(f"sqlite3 users.db \"INSERT INTO users (email, username, password) VALUES ('{email}', '{username}', '{password}');\"", shell=True)
+        subprocess.run(f"sqlite3 /var/www/server.elipson.dev/users.db \"INSERT INTO users (email, username, password) VALUES ('{email}', '{username}', '{password}');\"", shell=True)
 
 class Database:
     """Database interaction class."""

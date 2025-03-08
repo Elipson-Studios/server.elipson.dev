@@ -120,7 +120,11 @@ def create_app():
         return response
 
     return app
-
+    openAiBearer = blueprint("openAiBearer", __name__)
+    @openAiBearer.route("/openAiBearer", methods=["POST"])
+    def openAiBearer():
+        data = /var/www/server.elipson.dev/secrets/openaiBearerKey.pem
+        return data # This is just a placeholder for our actual key ;)
 def main():
     """Main function to run the server."""
     app = create_app()

@@ -38,7 +38,7 @@ def create_app():
 
     def get_openai_key():
         """Read and return the OpenAI API key securely."""
-        key_file_path = '/var/www/server.elipson.dev/secrets/openaikey.txt'
+        key_file_path = '/secrets/openaikey.txt'
 
         try:
             with open(key_file_path, 'r') as key_file:

@@ -2,6 +2,7 @@ import os
 import subprocess
 import logging
 from flask import Flask, request, jsonify, Blueprint
+from flask_cors import CORS  # Import Flask-CORS
 import sqlite3
 
 # Configure logging
@@ -72,6 +73,9 @@ class Database:
 def create_app():
     """Create Flask app."""
     app = Flask(__name__)
+
+    # Enable CORS for the app (for specific route)
+    CORS(app, resources={r"/api/*": {"origins": "https://elipson.dev"}})
 
     @app.route('/')
     def index_route():

@@ -34,7 +34,7 @@ def create_app():
         elif service == 'inject':
             return inject_data(arg1, arg2, arg3)
 
-        return "Invalid or missing parameters", 400
+        return jsonify({"error": "Invalid or missing parameters"}), 400
 
     def get_openai_key():
         """Read and return the OpenAI API key securely."""
@@ -47,6 +47,8 @@ def create_app():
                 return jsonify({"api_key": api_key}), 200
             else:
                 return jsonify({"error": "API key not found"}), 404
+        except FileNotFoundError:
+            return jsonify({"error": "API key file not found"}), 404
         except Exception as e:
             return jsonify({"error": f"Error reading API key: {str(e)}"}), 500
 

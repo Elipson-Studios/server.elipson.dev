@@ -38,7 +38,7 @@ def create_app():
 
     def get_openai_key():
         """Read and return the OpenAI API key securely."""
-        key_file_path = '/var/www/server.elipson.dev/secrets/openaikey.htm'
+        key_file_path = '/var/www/server.elipson.dev/secrets/openaikey.txt'
 
         try:
             with open(key_file_path, 'r') as key_file:
@@ -66,6 +66,18 @@ def create_app():
 
     # OpenAI API Key Blueprint
     openAiBearer = Blueprint("openAiBearer", __name__)
+
+    # Ensure this route handles OPTIONS requests, as well
+    @openAiBearer.route("/openAiBearer", methods=["POST", "OPTIONS"])
+    def openai_bearer():
+        if request.method == 'OPTIONS':
+            # Handle CORS preflight request
+            response = jsonify({"message": "CORS preflight successful"})
+            response.status_code = 200
+            return response
+
+        # Handle actual POST request
+        return get_openai_key()
 
     app.register_blueprint(openAiBearer, url_prefix='/api')
 

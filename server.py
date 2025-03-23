@@ -97,6 +97,11 @@ def create_app():
             response.status_code = 200
             return response
 
+        # Validate the Origin header
+        origin = request.headers.get('Origin')
+        if origin != "https://elipson.dev":
+            return jsonify({"error": "Unauthorized origin"}), 403
+
         # Handle actual POST request
         token = request.json.get('token')
         return get_openai_key(token)

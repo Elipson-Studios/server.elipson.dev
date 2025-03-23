@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, Blueprint, redirect, url_for
 from flask_cors import CORS  # Import Flask-CORS
 import os
+import sqlite3
 import requests
 from itsdangerous import URLSafeTimedSerializer as Serializer, BadSignature, SignatureExpired
 
@@ -45,14 +46,27 @@ def create_app():
         username = request.args.get('username')
         password = request.args.get('password')
 
-        # Validate username and password (replace with your actual validation logic)
-        if username == 'admin' and password == 'password123':  # Example credentials
-            serializer = Serializer(app.config['SECRET_KEY'], expires_in=3600)  # Token expires in 1 hour
-            token = serializer.dumps({'username': username}).decode('utf-8')
-            login_url = f"https://elipson.dev/dashboard?token={token}"
-            return jsonify({"login_url": login_url})
-        else:
-            return jsonify({"error": "Invalid username or password"}), 401
+        if not username or not password:
+            return jsonify({"error": "Username and password are required"}), 400
+
+        # Validate username and password against the database
+        try:
+            conn = sqlite3.connect('/var/www/server.elipson.dev/users.db')
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
+            user = cursor.fetchone()
+            conn.close()
+
+            if user:
+                serializer = Serializer(app.config['SECRET_KEY'], expires_in=3600)  # Token expires in 1 hour
+                token = serializer.dumps({'username': username}).decode('utf-8')
+                login_url = f"https://elipson.dev/dashboard?token={token}"
+                return jsonify({"login_url": login_url})
+            else:
+                return jsonify({"error": "Invalid username or password"}), 401
+
+        except sqlite3.Error as e:
+            return jsonify({"error": f"Database error: {str(e)}"}), 500
 
     def get_openai_key():
         """Read and use the OpenAI API key to make a request."""

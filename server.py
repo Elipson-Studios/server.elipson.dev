@@ -1,8 +1,9 @@
-from flask import Flask, request, jsonify, Blueprint
+from flask import Flask, request, jsonify, Blueprint, redirect, url_for
 from flask_cors import CORS  # Import Flask-CORS
 import os
 import requests
 from itsdangerous import URLSafeTimedSerializer as Serializer, BadSignature, SignatureExpired
+
 def create_app():
     """Create Flask app."""
     app = Flask(__name__)
@@ -37,6 +38,21 @@ def create_app():
             return inject_data(arg1, arg2, arg3)
 
         return jsonify({"error": "Invalid or missing parameters"}), 400
+
+    @app.route('/login', methods=['GET'])
+    def login():
+        """Generate a login token and return a URL."""
+        username = request.args.get('username')
+        password = request.args.get('password')
+
+        # Validate username and password (replace with your actual validation logic)
+        if username == 'admin' and password == 'password123':  # Example credentials
+            serializer = Serializer(app.config['SECRET_KEY'], expires_in=3600)  # Token expires in 1 hour
+            token = serializer.dumps({'username': username}).decode('utf-8')
+            login_url = f"https://elipson.dev/dashboard?token={token}"
+            return jsonify({"login_url": login_url})
+        else:
+            return jsonify({"error": "Invalid username or password"}), 401
 
     def get_openai_key():
         """Read and use the OpenAI API key to make a request."""

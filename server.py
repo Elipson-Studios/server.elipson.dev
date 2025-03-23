@@ -28,8 +28,8 @@ def create_app():
         arg2 = params.get('arg2')
         arg3 = params.get('arg3')
 
-        if service == 'getOpenAIToken':
-            return get_openai_token()
+        if service == 'getOpenAIKey':
+            return get_openai_key()
 
         elif service == 'get':
             return get_data(arg1, arg2, arg3)
@@ -40,16 +40,29 @@ def create_app():
         return jsonify({"error": "Invalid or missing parameters"}), 400
 
     def get_openai_key():
-        """Read and return the OpenAI API key securely."""
+        """Read and use the OpenAI API key to make a request."""
         key_file_path = '/var/www/server.elipson.dev/secrets/openaikey.htm'
 
         try:
             with open(key_file_path, 'r') as key_file:
                 api_key = key_file.read().strip()
-            if api_key:
-                return jsonify({"api_key": api_key}), 200
-            else:
+            
+            if not api_key:
                 return jsonify({"error": "API key not found"}), 404
+            
+            # Make a request to OpenAI's API (example)
+            headers = {"Authorization": f"Bearer {api_key}"}
+            openai_response = requests.post(
+                "https://api.openai.com/v1/your-endpoint",
+                headers=headers,
+                json={"your_request_payload": "data"}
+            )
+
+            if openai_response.status_code == 200:
+                return jsonify(openai_response.json()), 200
+            else:
+                return jsonify({"error": "Failed to communicate with OpenAI API", "details": openai_response.json()}), openai_response.status_code
+        
         except FileNotFoundError:
             return jsonify({"error": "API key file not found"}), 404
         except Exception as e:
@@ -89,8 +102,16 @@ def create_app():
             return jsonify({"error": f"Unauthorized origin: {origin}"}), 403
 
         # Handle actual POST request
-        token = request.json.get('token')
-        return get_openai_key(token)
+        try:
+            data = request.json
+            if not data or 'input' not in data:
+                return jsonify({"error": "Invalid request data"}), 400
+            
+            # Use the get_openai_key() function to make the request
+            return get_openai_key()
+
+        except Exception as e:
+            return jsonify({"error": f"Error processing request: {str(e)}"}), 500
 
     app.register_blueprint(openAiBearer, url_prefix='/api')
 

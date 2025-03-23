@@ -99,8 +99,10 @@ def create_app():
 
         # Validate the Origin header
         origin = request.headers.get('Origin')
+        if not origin:
+            return jsonify({"error": "Missing Origin header"}), 403
         if origin != "https://elipson.dev":
-            return jsonify({"error": "Unauthorized origin"}), 403
+            return jsonify({"error": f"Unauthorized origin: {origin}"}), 403
 
         # Handle actual POST request
         token = request.json.get('token')

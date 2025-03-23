@@ -39,37 +39,21 @@ def create_app():
 
         return jsonify({"error": "Invalid or missing parameters"}), 400
 
-    def generate_token():
-        """Generate a token for the client."""
-        s = Serializer(app.config['SECRET_KEY'], expires_in=3600)
-        return s.dumps({'access': 'openai'}).decode('utf-8')
+    def get_openai_key():
+        """Read and return the OpenAI API key securely."""
+        key_file_path = '/var/www/server.elipson.dev/secrets/openaikey.htm'
 
-    def verify_token(token):
-        """Verify the token from the client."""
-        s = Serializer(app.config['SECRET_KEY'])
         try:
-            data = s.loads(token)
-        except SignatureExpired:
-            return False  # Token has expired
-        except BadSignature:
-            return False  # Token is invalid
-        return data
-
-    def get_openai_token():
-        """Generate and return a token for the client."""
-        token = generate_token()
-        return jsonify({"token": token}), 200
-
-    def get_openai_key(token):
-        """Verify the token and return the OpenAI API key securely."""
-        if not verify_token(token):
-            return jsonify({"error": "Invalid or expired token"}), 403
-
-        api_key = os.getenv('OPENAI_API_KEY')
-        if api_key:
-            return jsonify({"api_key": api_key}), 200
-        else:
-            return jsonify({"error": "API key not found"}), 404
+            with open(key_file_path, 'r') as key_file:
+                api_key = key_file.read().strip()
+            if api_key:
+                return jsonify({"api_key": api_key}), 200
+            else:
+                return jsonify({"error": "API key not found"}), 404
+        except FileNotFoundError:
+            return jsonify({"error": "API key file not found"}), 404
+        except Exception as e:
+            return jsonify({"error": f"Error reading API key: {str(e)}"}), 500
 
     def get_data(database, line, col):
         """Get data from the database."""

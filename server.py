@@ -2,8 +2,7 @@ from flask import Flask, request, jsonify, Blueprint
 from flask_cors import CORS  # Import Flask-CORS
 import os
 import requests
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
-
+from itsdangerous import URLSafeTimedSerializer as Serializer, BadSignature, SignatureExpired
 def create_app():
     """Create Flask app."""
     app = Flask(__name__)

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+    <channel>
+        <title>Server Health RSS Feed</title>
+        <link>http://server.elipson.dev/health</link>
+        <description>Real-time server health reports updated every 30 seconds</description>
+        <ttl>0.5</ttl>
+
+        <item>
+            <title>Server Health Report</title>
+            <link>http://server.elipson.dev/health/report</link>
+            <description>CPU: 15%, Memory: 45%, Disk: 70%</description>
+            <pubDate>Mon, 30 Oct 2023 12:00:00 GMT</pubDate>
+        </item>
+
+        <item>
+            <title>Server Health Report</title>
+            <link>http://server.elipson.dev/health/report</link>
+            <description>CPU: 20%, Memory: 50%, Disk: 75%</description>
+            <pubDate>Mon, 30 Oct 2023 12:00:30 GMT</pubDate>
+        </item>
+    </channel>
+</rss>
